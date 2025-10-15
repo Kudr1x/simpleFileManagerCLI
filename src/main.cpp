@@ -3,6 +3,18 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <cstdlib>
+
+std::string getShortPath(const std::string& fullPath) {
+    const char* home = std::getenv("HOME");
+    std::string homeDir = home ? home : "";
+
+    if (!homeDir.empty() && fullPath.find(homeDir) == 0) {
+        return "~" + fullPath.substr(homeDir.length());
+    }
+
+    return fullPath;
+}
 
 int main() {
     auto fileSystemService = std::make_shared<application::FileSystemService>();
@@ -15,7 +27,10 @@ int main() {
     std::cout << std::endl;
 
     while (!shouldExit) {
-        std::cout << "fm> ";
+        std::string currentPath = fileSystemService->getCurrentPath();
+        std::string shortPath = getShortPath(currentPath);
+
+        std::cout << shortPath << "> ";
 
         std::string input;
         std::getline(std::cin, input);
